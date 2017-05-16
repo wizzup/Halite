@@ -20,7 +20,7 @@
 
                 <p>Halite is designed for all levels of coding enthusiasts—from high school students to senior engineers. The simplest Halite bot requires only 10 lines of code, but bots can get ever more advanced. Players may find themselves surprised: we’ve learned from thousands of hours of gameplay that it’s not always the most complicated algorithm that wins. Creativity and insight are highly rewarded! So code well — a bot’s fate depends on it.</p>
 
-                <p>Halite was conceived of by <a href="https://github.com/Sydriax">Benjamin Spector</a>, who partnered with his high school class-mate <a href="https://github.com/truell20">Michael Truell</a> to develop the game. After receiving positive feedback on the Halite, the pair continually revised the game, extended it into the cloud and developed additional execution, leaderboard, and web interface capabilities.</p>
+                <p>Halite was conceived of and developed by <a href="https://github.com/Sydriax">Benjamin Spector</a> and <a href="https://github.com/truell20">Michael Truell</a>. Ben largely wrote the game implementation and starter packages, while Michael was primarily responsible for the website and the competition backend infrastructure. After receiving positive feedback on the Halite, the pair continually revised the game, extended it into the cloud and developed additional execution, leaderboard, and web interface capabilities.</p>
 
                 <p><a href="https://www.twosigma.com/">Two Sigma</a>, having had a history of playful programming challenges for its mathematical and software-oriented teams (e.g., see the <a href="https://www.youtube.com/watch?v=oxAPXN5UKa8">Robotic Air Hockey Competition</a>) retained Ben and Michael as 2016 summer interns to further develop Halite and then run an internal Halite Challenge. The team incorporated feedback from many, and about thirty-five players competed in a successful 3-week tournament in August.</p>
 
@@ -28,7 +28,7 @@
 
                 <p>To help productize and orchestrate the public launch, Two Sigma reached out to <a href="http://tech.cornell.edu/">Cornell Tech</a>, a leader in graduate tech education. With a shared interest in encouraging programming, entrepreneurship, and growth of the thriving New York tech scene, the two partners initiated the public Halite competition in November 2016. Cornell Tech is providing ongoing game support and community management, and by working closely with the online gaming community, it will empower players to collaborate, learn and have fun.</p>
 
-                <p>Many have contributed to Halite beyond Ben’s and Michael’s invention and engineering; they include Eric Abrego, Matt Adereth, Trammel Hudson, Emily Malloy, Arnaud Sahuguet, and Scott Spinner. And, no doubt, much credit should also be provided to users who are sending questions and comments to the <a href="http://forums.halite.io">forums</a>.</p>
+                <p>Many have contributed to Halite beyond Ben’s and Michael’s invention and engineering; they include Jaques Clapauch, Eric Abrego, Matt Adereth, Trammel Hudson, Emily Malloy, Arnaud Sahuguet, and Scott Spinner. And, no doubt, much credit should also be provided to users who are sending questions and comments to the <a href="http://forums.halite.io">forums</a>.</p>
 
                 <p>May the best bot win!</p>
 

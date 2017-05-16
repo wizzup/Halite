@@ -14,7 +14,7 @@ $(function() {
 
             var vr = "<span style='color: #0092a1;'>|</span>";
             this.$profileImage.attr("src", "https://avatars.githubusercontent.com/u/"+this.user["oauthID"]);
-            this.$name.html("<a href='https://github.com/" + this.user['username'] + "'>" + filterXSS(this.user['username']) + "</a>");
+            this.$name.html("<a href='https://github.com/" + this.user['username'] + "'>" + this.user['username'] + "</a>");
 
             this.$primaryInfo.append("<a href='leaderboard.php?userID="+this.user["userID"]+"'>Rank " + this.user['rank']+"</a>");
             this.$primaryInfo.append("<br>");
@@ -23,6 +23,8 @@ $(function() {
             this.$primaryInfo.append("<span title='mu: "+ mu +" sigma: "+ sigma +"'>"+ score +" points</span>");
 
             this.$secondaryInfo.append($("<span>Made in <a href='leaderboard.php?field=language&heading="+encodeURIComponent(this.user['language'])+"&value="+encodeURIComponent(this.user['language'])+"'>"+this.user['language']+ "</a></span>"));
+            this.$secondaryInfo.append($("<br>"));
+            this.$secondaryInfo.append($("<span>At <a href='leaderboard.php?field=level&heading="+encodeURIComponent(this.user['level'])+"&value="+encodeURIComponent(this.user['level'])+"'>"+this.user['level']+ "</a> level</span>"));
             this.$secondaryInfo.append($("<br>"));
             if(this.user['organization'] != 'Other') {
                 this.$secondaryInfo.append($("<span>Member of <a href='leaderboard.php?field=organization&heading="+encodeURIComponent(this.user['organization'])+"&value="+encodeURIComponent(this.user['organization'])+"'>"+this.user['organization']+ "</a></span>"));
@@ -174,7 +176,6 @@ $(function() {
                 this.$panel.css("display", "none");
             } else {
                 this.$tableHeader.html("<th>Time</th><th>Opponents</th><th>Result</th><th>Dimensions</th><th>View</th>");
-                if(this.isMe) this.$tableHeader.append("<th>Error Log</th>");
                 this.$tableBody.empty();
                 for(var a = 0; a < this.games.length; a++) {
                     this.$tableBody.append(this.getTableRow(this.games[a]));
@@ -187,7 +188,7 @@ $(function() {
             playersList = game.users.filter(function(player) {
                 return player.userID != userID;
             }).map(function(player) {
-                return "<a href='user.php?userID="+player.userID+"'><img src='https://avatars1.githubusercontent.com/u/"+player.oauthID+"?s=20' style='border-radius: 2px; width: 20px; height: 20px;'></a>";
+                return "<a href='user.php?userID="+player.userID+"'><img src='https://avatars1.githubusercontent.com/u/"+player.oauthID+"?s=20' style='border-radius: 2px; width: 20px; height: 20px;' title='("+player.userRank+") "+player.username+"'></a>";
             }).join(" ");
 
             var thisUser = game.users.find(function(p){return parseInt(p.userID)==userID;});
@@ -196,18 +197,36 @@ $(function() {
             var dateComponents = game.timestamp.split(/[- :]/);
             var gameDate = new Date(Date.UTC(dateComponents[0], dateComponents[1]-1, dateComponents[2], dateComponents[3], dateComponents[4], dateComponents[5]));
 
-            var $row = $("<tr><td>"+gameDate.toLocaleTimeString()+"</td><td>"+playersList+"</td><td>"+result+"</td><td>"+game.mapWidth+"x"+game.mapHeight+"</td><td><a href='game.php?replay="+game.replayName+"'><span class='glyphicon glyphicon-film'></span></a></td></tr>");
-            if(this.isMe) {
-                var me = null;
-                for(var a = 0; a < game.users.length; a++) {
-                    if(game.users[a].userID == this.userID) {
-                        me = game.users[a];
-                        break;
-                    }
+            var me = null;
+            var numErrors = 0;
+            for(var a = 0; a < game.users.length; a++) {
+                var u = game.users[a];
+                if(u.userID == this.userID) {
+                    me = u;
                 }
-                if(me.errorLogName != undefined && me.errorLogName != null) $row.append("<td><a target='_blank' href='"+url+"errorLog?errorLogName="+me.errorLogName+"'><span class='glyphicon glyphicon-save-file'></span></a></td>");
-                else $row.append("<td>NA</td>");
+                if(u.errorLogName != undefined && u.errorLogName != null){
+                    numErrors += 1;
+                }
             }
+            var errorMsg = "";
+            if(me.errorLogName != undefined && me.errorLogName != null) {
+                var tooltip = "Ended game with an error";
+                if(numErrors > 1) {
+                    tooltip = "This bot and "+(numErrors - 1)+" other";
+                    if(numErrors > 2) { tooltip += "s"; }
+                    tooltip += " errored out";
+                }
+                if(this.isMe) {
+                    errorMsg = "<a target='_blank' href='"+url+"errorLog?errorLogName="+me.errorLogName+"'><span class='glyphicon glyphicon-save-file' title='"+tooltip+"'></span></a>";
+                } else {
+                    errorMsg = "<span class='glyphicon glyphicon-exclamation-sign' title='"+tooltip+"'></span>";
+                }
+            } else if(numErrors == 1) {
+                errorMsg = "<span class='glyphicon glyphicon-asterisk' title='One opponent errored out.'></span>";
+            } else if(numErrors > 1) {
+                errorMsg = "<span class='glyphicon glyphicon-asterisk' title='"+numErrors+" opponents errored out.'></span>";
+            }
+            var $row = $("<tr><td>"+gameDate.toLocaleTimeString()+"</td><td>"+playersList+"</td><td>"+result+" "+errorMsg+"</td><td>"+game.mapWidth+"x"+game.mapHeight+"</td><td><a href='game.php?replay="+game.replayName+"'><span class='glyphicon glyphicon-film'></span></a></td></tr>");
             return $row;
         },
         loadMore: function() {
@@ -220,11 +239,14 @@ $(function() {
     if(userIDGET != null || (session = getSession())) {
         var isMe = (userIDGET == null || userIDGET == undefined);
         var user = isMe ? getUser(session['userID']) : getUser(userIDGET);
+        user["username"] = escapeHtml(filterXSS(user["username"]));
+        user["language"] = escapeHtml(filterXSS(user["language"]));
+
         if(user['isRunning'] == 0) {
             $("#normalBody").css("display", "none");
             $("#noBotMessage").css("display", "block");
         } else {
-            $(document).prop('title', filterXSS(user.username));
+            $(document).prop('title', user["username"]);
 
             profileCard.init(user);
             gameTable.init(parseInt(user["userID"]), isMe, function(userID, startingID) {

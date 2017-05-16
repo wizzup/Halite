@@ -1,7 +1,7 @@
 <?php
 session_start();
+$config = parse_ini_file("../halite.ini", true);
 if(isset($_SESSION['userID'])) {
-    $config = parse_ini_file("../halite.ini", true);
     $mysqli = new mysqli($config['database']['hostname'],
         $config['database']['username'],
         $config['database']['password'],
@@ -12,7 +12,7 @@ if(isset($_SESSION['userID'])) {
         exit();
     }
     if(count(mysqli_fetch_array(mysqli_query($mysqli, "SELECT * FROM User WHERE userID={$_SESSION['userID']} and isEmailGood=0"))) > 0) {
-        header("Location: email.php");
+        header("Location: associate.php");
     }
 }
 ?>
@@ -39,8 +39,11 @@ if(isset($_SESSION['userID'])) {
             <form id="submitForm">
                 <ul class="nav navbar-nav navbar-right loggedIn" id="logoutNav">
                     <?php include 'includes/dropdowns.php'; ?>
+                    <?php if(!isset($config["compState"]["closeSubmissions"]) || !$config["compState"]["closeSubmissions"]): ?>
                     <li><a href="#" id="submitButton">Submit</a><input type="file" id="myFile" name="botFile"></li>
+                    <?php endif; ?>
                     <li><a href="#" id="logoutButton">Logout</a></li>
+                    <li><a href="associate.php">Associate</a></li>
                 </ul>
             </form>
         </div>
@@ -57,7 +60,7 @@ if(isset($_SESSION['userID'])) {
             </div>
             <div class="modal-body">
                 <h3>Name your main file <b>MyBot</b> with an appropriate file extension (e.g. MyBot.java).</h3>
-                <h3>Make sure that you aren't using stdout or stdin (print, cout, System.out.print, etc), which will cause your bot to fail. Instead, use <a href="guides_development.php">a log file</a>.</h3>
+                <h3>Make sure that you aren't using stdout or stdin (print, cout, System.out.print, etc), which will cause your bot to fail. Instead, use <a href="advanced_development.php">a log file</a>.</h3>
                 <h3>Upload a <b>zip file</b> of your source code.</h3>
                 <h3>Once we have compiled your code, you will get an email notification.</h3>
                 <button id="submitModalButton" type="button" class="btn btn-primary">Submit!</button>

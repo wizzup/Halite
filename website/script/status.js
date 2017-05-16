@@ -31,8 +31,10 @@ $(function() {
 
         },
         getTableRow: function(worker) {
-            console.log(worker.lastRequestTime)
-            var timeSinceCommunication = Math.round(100*((new Date() - new Date(worker.lastRequestTime)) / (1000*60))) / 100;
+            console.log(worker.lastRequestTime);
+            var dateComponents = worker.lastRequestTime.split(/[- :]/);
+            var lastRequestDate = new Date(Date.UTC(dateComponents[0], dateComponents[1]-1, dateComponents[2], dateComponents[3], dateComponents[4], dateComponents[5]));
+            var timeSinceCommunication = Math.round(100*((new Date() - lastRequestDate) / (1000*60))) / 100;
             return "<tr><td>"+worker.workerID+"</td><td>"+timeSinceCommunication+" min</td></tr>";  
         }
     };
@@ -41,10 +43,14 @@ $(function() {
     var throughput = getThroughput();
     var users = getNumActiveUsers();
     var averageUsersPerGame = 4;
+    var medians = getScoreMedians();
+    medians["mu"] = Math.round(100*medians["mu"])/100;
+    medians["sigma"] = Math.round(100*medians["sigma"])/100;
     statTable.init([
         {name: "Throughput", value: throughput},
         {name: "Estimated time/game/user (Avg users/game = 4)", value: ((24*60*users)/(throughput*averageUsersPerGame)).toFixed(2) + " min"},
         {name: "Active Users", value: getNumActiveUsers()},
-        {name: "Total Submissions", value: getNumSubmissions()}
+        {name: "Total Submissions", value: getNumSubmissions()},
+        {name: "Median mu (sigma)", value: medians["mu"]+" ("+medians["sigma"]+")"}
     ]);
 })
